@@ -114,7 +114,7 @@ int H264_Extractor::get_sps_pps() {
 	return -1;
 }
 
-unsigned char *H264_Extractor::get_frame(int &payload_size, unsigned int &time_stamp) {
+unsigned char *H264_Extractor::get_frame(unsigned int &payload_size, unsigned int &time_stamp) {
 	unsigned char *data;
 	if(frame_index>=nalu_list.size()-1)
 		return NULL;

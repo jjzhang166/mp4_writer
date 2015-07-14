@@ -1,3 +1,5 @@
+#ifndef __MP4_EXTRACTOR_H_
+#define __MP4_EXTRACTOR_H_
 #include <vector>
 using namespace std;
 
@@ -14,8 +16,9 @@ public:
 
 	int get_to_list(const char *path);
 	int get_sps_pps();
-	unsigned char *get_frame(int &payload_size, unsigned int &time_stamp);
+	unsigned char *get_frame(unsigned int &payload_size, unsigned int &time_stamp);
 	void release_frame(unsigned char **buf);
 public:
        	unsigned char *sps, *pps, *sps_pps;
 };
+#endif
