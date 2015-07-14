@@ -127,7 +127,7 @@ unsigned char *H264_Extractor::get_frame(unsigned int &payload_size, unsigned in
 	memcpy(data, (void *)h264_data+start_pos, payload_size);
 
 #ifdef PRINT_FRAME
-	printf("FRAME[%05d]--> ", frame_index);
+	printf("FRAME[%05d]--> [TS: %05d] -->  ", frame_index, time_stamp);
 	for(int k=0; k<PRINT_FRAME_NUM; k++)
 		printf("0x%02x ", data[k]);
 	printf("\n");
