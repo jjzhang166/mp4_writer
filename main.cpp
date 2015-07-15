@@ -7,8 +7,9 @@ extern "C" {
 #include "mp4_extractor.h"
 using namespace std;
 
-#define FILE_PATH "/home/liwei/Desktop/test.264"
+#define FILE_PATH "/home/liwei/Desktop/720p_1930kbs_30帧.264"
 #define MP4_FILE_PATH "/home/liwei/Desktop/test.mp4"
+#define MP4_FPS 30
 
 int main() { H264_Extractor *extractor = new H264_Extractor();
 	int ret = extractor->get_to_list(FILE_PATH);
@@ -33,6 +34,7 @@ int main() { H264_Extractor *extractor = new H264_Extractor();
 
 	Mp4_Writer *writer = new Mp4_Writer(1280, 720);
 	writer->SetMp4FileName(MP4_FILE_PATH);
+	writer->SetMp4Fps(MP4_FPS);
 	writer->DoStartRecord();
 
 	int first_frame;

@@ -7,6 +7,7 @@
 using namespace std;
 
 class Mp4_Writer {
+	int mp4_fps;
 	bool isFirstSPS;
 	bool isFirstPPS;
 	int video_width;
@@ -30,6 +31,7 @@ public:
 	Mp4_Writer(int width, int height);
 	~Mp4_Writer();
 
+	void SetMp4Fps(int fps);
 	void SetMp4FileName(const char *file_name);
 	int DoStartRecord();
 	int DoStopRecord();

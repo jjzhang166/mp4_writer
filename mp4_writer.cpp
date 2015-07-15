@@ -3,6 +3,7 @@
 #include "mp4_writer.h"
 
 Mp4_Writer::Mp4_Writer(int width, int height):
+			mp4_fps(25),
 			isFirstSPS(false),
 			isFirstPPS(false),
 			video_frame_number(1),
@@ -32,6 +33,10 @@ Mp4_Writer::~Mp4_Writer() {
 
 }
 
+void Mp4_Writer::SetMp4Fps(int fps) {
+	mp4_fps = fps;
+}
+
 void Mp4_Writer::SetMp4FileName(const char *file_name) {
 	assert(file_name != NULL);
 	strcpy(mp4_filename, file_name);
@@ -43,7 +48,7 @@ int Mp4_Writer::DoStartRecord() {
 		return -1;
 	}
 
-	if(MP4SetTimeScale(mp4_file, 90000) != 1) {
+	if(MP4SetTimeScale(mp4_file, video_time_scale) != 1) {
 		return -1;
 	}
 	return 0;
@@ -84,7 +89,7 @@ void Mp4_Writer::WriteEncodedVideoFrame(const unsigned char *payload_data, unsig
 		unsigned char profile_compat = *(data_header + 2);
 		unsigned char avc_level = *(data_header + 3);
 
-		video_track_id = MP4AddH264VideoTrack(mp4_file, video_time_scale, MP4_INVALID_DURATION, video_width, video_height, avc_profile, profile_compat, avc_level, 3);
+		video_track_id = MP4AddH264VideoTrack(mp4_file, video_time_scale, video_time_scale/mp4_fps, video_width, video_height, avc_profile, profile_compat, avc_level, 3);
 
 		if(video_track_id == MP4_INVALID_TRACK_ID) {
 			return;
@@ -132,7 +137,7 @@ void Mp4_Writer::WriteEncodedVideoFrame(const unsigned char *payload_data, unsig
 			write_len += copy_len;
 
 			if( ((*head & 0x1f) == 0x07) || ((*head & 0x1f) == 0x08) || ((*head & 0x1f) == 0x06) ) {
-				WriteH264Frame(video_payload_data, write_len, time_stamp/100);
+				WriteH264Frame(video_payload_data, write_len, time_stamp);//time_stamp/100);
 				write_len = 0;
 				write_pos = video_payload_data;
 			}
@@ -159,7 +164,7 @@ void Mp4_Writer::WriteEncodedVideoFrame(const unsigned char *payload_data, unsig
 	}
 
 	if(write_len>0) {
-		WriteH264Frame(video_payload_data, write_len, time_stamp/100);
+		WriteH264Frame(video_payload_data, write_len, 3600);
 	}
 	
 	video_frame_number++;
@@ -230,6 +235,6 @@ void Mp4_Writer::WriteH264Frame(unsigned char *nalus, unsigned int nalus_len, un
 	}
 
 	if(write_it) {
-		bool res = MP4WriteSample(mp4_file, video_track_id, nalus, nalus_len, duration, rend_offset, isIFrame);
+		bool res = MP4WriteSample(mp4_file, video_track_id, nalus, nalus_len, MP4_INVALID_DURATION, rend_offset, isIFrame);
 	}
 }

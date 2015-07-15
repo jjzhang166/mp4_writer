@@ -8,11 +8,14 @@
 
 using namespace std;
 
-#define DEBUG 1
-#define PRINT_NALU_LIST 1
+//#define DEBUG
+//#define PRINT_NALU_LIST
 
-#define PRINT_FRAME
+//#define PRINT_FRAME
+#if defined(PRINT_FRAME) 
 #define PRINT_FRAME_NUM 10
+#endif
+
 //#define PRINT_FRAME_NUM payload_size
 
 #define DEFAULT_FILE_SIZE 20*1024*1024
@@ -79,10 +82,12 @@ int H264_Extractor::get_sps_pps() {
 			sps = (unsigned char *)malloc(size*sizeof(unsigned char));
 			memcpy(sps, h264_data+index+i, size);
 
+#ifdef DEBUG
 			printf("Has sps\n");
 			for(int k=0; k<size; k++)
 				printf("0x%02x ", sps[k]);
 			printf("\n");
+#endif
 			break;
             }
         }
@@ -97,10 +102,12 @@ int H264_Extractor::get_sps_pps() {
 			pps = (unsigned char *)malloc(size*sizeof(unsigned char));
 			memcpy(pps, h264_data+index+j, size);
 
+#ifdef DEBUG
 			printf("Has pps\n");
 			for(int k=0; k<size; k++)
 				printf("0x%02x ", pps[k]);
 			printf("\n");
+#endif
 	    		break;
                 }
             }
@@ -133,7 +140,7 @@ unsigned char *H264_Extractor::get_frame(unsigned int &payload_size, unsigned in
 	printf("\n");
 #endif
 	frame_index++;
-	time_stamp = frame_index*1000;
+	time_stamp = frame_index*3600;
 	return data;
 }
 
