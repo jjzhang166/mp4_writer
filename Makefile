@@ -1,24 +1,53 @@
-CC = gcc
-XX = g++
+TARGET = mp4_writer
+OBJ_PATH = objs
+PREFIX_BIN =
 
-#LDFLAGS = -L. --static
-LDFLAGS = -L. 
+CC = g++
+INCLUDES = -Iinclude -Ilibs/mp4v2-2.0.0/include -Ilibs/mp4v2-2.0.0/libplatform -Ilibs/mp4v2-2.0.0/libutil
 LIBS = -lmp4v2
+CFLAGS =-Wall -O2 -g
+LINKFLAGS = -L./libs/mp4v2-2.0.0/.libs
 
-CFLAGS = -Wall -O -g -I../mp4v2-2.0.0/include -I../mp4v2-2.0.0/libplatform -I../mp4v2-2.0.0/libutil
+SRCDIR = src
 
-TARGET = ./mp4_writer
-%.o: %.c
-	$(CC) $(CFLAGS) -c $< -o $@
-%.o: %.cpp
-	$(XX) $(CFLAGS) -c $< -o $@
+#C_SOURCES = $(wildcard *.c)
+C_SRCDIR = $(SRCDIR)
+C_SOURCES = $(foreach d,$(C_SRCDIR),$(wildcard $(d)/*.c) )
+C_OBJS = $(patsubst %.c, $(OBJ_PATH)/%.o, $(C_SOURCES))
 
-SOURCES = $(wildcard *.c *.cpp)
-OBJS = $(patsubst %.c,%.o,$(patsubst %.cpp,%.o,$(SOURCES)))
+#CPP_SOURCES = $(wildcard *.cpp)
+CPP_SRCDIR = $(SRCDIR)
+CPP_SOURCES = $(foreach d,$(CPP_SRCDIR),$(wildcard $(d)/*.cpp) )
+CPP_OBJS = $(patsubst %.cpp, $(OBJ_PATH)/%.o, $(CPP_SOURCES))
 
-$(TARGET) : $(OBJS)
-	$(XX) $(LDFLAGS) $(OBJS) -o $(TARGET) $(LIBS)
-	chmod a+x $(TARGET)
+default:init compile
+
+$(C_OBJS):$(OBJ_PATH)/%.o:%.c
+	$(CC) -c $(CFLAGS) $(INCLUDES) $< -o $@ $(LDFLAGS)
+
+$(CPP_OBJS):$(OBJ_PATH)/%.o:%.cpp
+	$(CC) -c $(CFLAGS) $(INCLUDES) $< -o $@ $(LDFLAGS)
+
+init:
+	$(foreach d,$(SRCDIR), mkdir -p $(OBJ_PATH)/$(d);)
+
+test:
+	@echo "C_SOURCES: $(C_SOURCES)"
+	@echo "C_OBJS: $(C_OBJS)"
+	@echo "CPP_SOURCES: $(CPP_SOURCES)"
+	@echo "CPP_OBJS: $(CPP_OBJS)"
+
+compile:$(C_OBJS) $(CPP_OBJS)
+	$(CC)  $^ -o $(TARGET)  $(LINKFLAGS) $(LIBS)
 
 clean:
-	rm -rf *.o mp4_writer
+	rm -rf $(OBJ_PATH)
+	rm -f $(TARGET)
+
+install: $(TARGET)
+	cp $(TARGET) $(PREFIX_BIN)
+
+uninstall:
+	rm -f $(PREFIX_BIN)/$(TARGET)
+
+rebuild: clean init compile
