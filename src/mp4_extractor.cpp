@@ -9,7 +9,7 @@
 using namespace std;
 
 //#define DEBUG
-//#define PRINT_NALU_LIST
+#define PRINT_NALU_LIST
 
 //#define PRINT_FRAME
 #if defined(PRINT_FRAME) 
@@ -78,9 +78,9 @@ int H264_Extractor::get_sps_pps() {
             unsigned char temp = h264_data[index+i];
             if((temp & 0x0f) == 0x07) {
 			hasSps = true;
-			size = nalu_list.at(1)-nalu_list.at(0)-i;
+			size = nalu_list.at(1)-nalu_list.at(0);
 			sps = (unsigned char *)malloc(size*sizeof(unsigned char));
-			memcpy(sps, h264_data+index+i, size);
+			memcpy(sps, h264_data+index, size);
 
 #ifdef DEBUG
 			printf("Has sps\n");
@@ -98,9 +98,9 @@ int H264_Extractor::get_sps_pps() {
                 unsigned char temp = h264_data[index+j];
                 if((temp & 0x0f) == 0x08) {
 			hasPps = true;
-			size = nalu_list.at(2)-nalu_list.at(1)-j;
+			size = nalu_list.at(2)-nalu_list.at(1);
 			pps = (unsigned char *)malloc(size*sizeof(unsigned char));
-			memcpy(pps, h264_data+index+j, size);
+			memcpy(pps, h264_data+index, size);
 
 #ifdef DEBUG
 			printf("Has pps\n");
